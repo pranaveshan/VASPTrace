@@ -1,0 +1,2655 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyber-slate">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VASPTrace | Blockchain Forensics & Exchange Identification Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       THEME SYSTEM - 4 DISTINCT HIGH-CONTRAST FORENSIC PALETTES
+       ========================================================================== */
+    
+    /* 1. Cyber Slate (Default Signature Dark Forensic Console) */
+    :root, [data-theme="cyber-slate"] {
+      --bg-app: #080c14;
+      --bg-surface: #0f172a;
+      --bg-surface-subtle: #141f36;
+      --bg-surface-hover: #1e293b;
+      --border-subtle: #1e293b;
+      --border-strong: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent-primary: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-subtle: rgba(2, 132, 199, 0.15);
+      
+      --sidebar-bg: #060911;
+      --sidebar-surface: #0e1526;
+      --sidebar-border: #1e293b;
+      --sidebar-text: #94a3b8;
+      --sidebar-text-bright: #ffffff;
+      
+      --header-bg: #060911;
+      --table-header: #141f36;
+      --input-bg: #0b1120;
+      --input-border: #283548;
+      --graph-bg: #060911;
+      --graph-grid: #131c2e;
+      --node-bg: #0f172a;
+      --node-text: #f8fafc;
+      --node-border: #334155;
+    }
+
+    /* 2. Deep Cobalt (Interpol / Intelligence Navy) */
+    [data-theme="deep-cobalt"] {
+      --bg-app: #020617;
+      --bg-surface: #0b132b;
+      --bg-surface-subtle: #101c3d;
+      --bg-surface-hover: #172554;
+      --border-subtle: #172554;
+      --border-strong: #1e3a8a;
+      --text-primary: #f0f9ff;
+      --text-secondary: #bfdbfe;
+      --text-muted: #93c5fd;
+      --accent-primary: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-subtle: rgba(37, 99, 235, 0.15);
+      
+      --sidebar-bg: #01040f;
+      --sidebar-surface: #091124;
+      --sidebar-border: #172554;
+      --sidebar-text: #93c5fd;
+      --sidebar-text-bright: #ffffff;
+      
+      --header-bg: #01040f;
+      --table-header: #101c3d;
+      --input-bg: #060b18;
+      --input-border: #1e3a8a;
+      --graph-bg: #01040f;
+      --graph-grid: #0f1e40;
+      --node-bg: #0b132b;
+      --node-text: #f0f9ff;
+      --node-border: #1e3a8a;
+    }
+
+    /* 3. Tactical Amber (SIGINT / Classified Operations) */
+    [data-theme="tactical-amber"] {
+      --bg-app: #0c0a09;
+      --bg-surface: #171412;
+      --bg-surface-subtle: #241f1c;
+      --bg-surface-hover: #2e2824;
+      --border-subtle: #3a322c;
+      --border-strong: #574c43;
+      --text-primary: #fafaf9;
+      --text-secondary: #e7e5e4;
+      --text-muted: #a8a29e;
+      --accent-primary: #d97706;
+      --accent-hover: #b45309;
+      --accent-subtle: rgba(217, 119, 6, 0.15);
+      
+      --sidebar-bg: #070605;
+      --sidebar-surface: #14110f;
+      --sidebar-border: #29231e;
+      --sidebar-text: #d6d3d1;
+      --sidebar-text-bright: #ffffff;
+      
+      --header-bg: #070605;
+      --table-header: #241f1c;
+      --input-bg: #0f0d0c;
+      --input-border: #443a33;
+      --graph-bg: #070605;
+      --graph-grid: #1f1a17;
+      --node-bg: #171412;
+      --node-text: #fafaf9;
+      --node-border: #574c43;
+    }
+
+    /* 4. GovCloud Light (Official MHA Daylight Dossier) */
+    [data-theme="govcloud-light"] {
+      --bg-app: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-surface-subtle: #f8fafc;
+      --bg-surface-hover: #edf2f7;
+      --border-subtle: #cbd5e1;
+      --border-strong: #94a3b8;
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent-primary: #1d4ed8;
+      --accent-hover: #1e40af;
+      --accent-subtle: rgba(29, 78, 216, 0.1);
+      
+      --sidebar-bg: #0f172a;
+      --sidebar-surface: #1e293b;
+      --sidebar-border: #334155;
+      --sidebar-text: #94a3b8;
+      --sidebar-text-bright: #ffffff;
+      
+      --header-bg: #0f172a;
+      --table-header: #f1f5f9;
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --graph-bg: #0f172a;
+      --graph-grid: #1e293b;
+      --node-bg: #ffffff;
+      --node-text: #0f172a;
+      --node-border: #cbd5e1;
+    }
+
+    /* Base Reset */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-size: 13px;
+      line-height: 1.5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Typography */
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-bold { font-weight: 700; }
+    .font-semibold { font-weight: 600; }
+    .text-muted { color: var(--text-muted); }
+    .text-secondary { color: var(--text-secondary); }
+    .text-xs { font-size: 11px; }
+
+    /* Top Institutional Header (Fixed 50px) */
+    #top-header {
+      height: 50px;
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      flex-shrink: 0;
+      z-index: 100;
+    }
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-subtitle {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Application Layout */
+    #app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 50px);
+      overflow: hidden;
+    }
+
+    /* Sidebar Navigation (Fixed 240px) */
+    #sidebar {
+      width: 240px;
+      background-color: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+      padding: 10px 0;
+    }
+    .nav-section-title {
+      padding: 8px 14px 4px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--sidebar-text);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 14px;
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--sidebar-text);
+      text-align: left;
+      cursor: pointer;
+      font-size: 12px;
+      border-left: 3px solid transparent;
+      transition: all 0.12s;
+    }
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--sidebar-text-bright);
+    }
+    .nav-item.active {
+      background: var(--sidebar-surface);
+      color: #ffffff;
+      font-weight: 600;
+      border-left-color: var(--accent-primary);
+    }
+    .nav-item svg {
+      width: 15px;
+      height: 15px;
+      margin-right: 10px;
+      flex-shrink: 0;
+      stroke: currentColor;
+    }
+    .nav-badge-count {
+      padding: 1px 5px;
+      border-radius: 3px;
+      background: #991b1b;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    /* Main Content Surface */
+    #main-content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: var(--bg-app);
+    }
+
+    /* Active Case Breadcrumb Strip (Fixed 36px) */
+    #active-dossier-strip {
+      height: 36px;
+      background: var(--bg-surface-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      flex-shrink: 0;
+    }
+    .dossier-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dossier-label { color: var(--text-muted); font-weight: 600; }
+    .dossier-val { color: var(--text-primary); font-weight: 700; }
+    .dossier-sep { color: var(--border-strong); margin: 0 4px; }
+
+    /* Scrollable Workspace Container */
+    #main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+    }
+
+    /* Panels & Cards */
+    .panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+    .panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-surface-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-subtitle {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      font-family: var(--font-mono);
+    }
+    .panel-body { padding: 16px; }
+
+    /* Presets Toolbar */
+    .presets-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 14px;
+    }
+    .presets-label {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .badge-demo { background: rgba(217, 119, 6, 0.15); color: #f59e0b; border-color: rgba(217, 119, 6, 0.35); }
+    .badge-live { background: rgba(22, 101, 52, 0.15); color: #4ade80; border-color: rgba(34, 197, 94, 0.35); }
+    .badge-external { background: rgba(37, 99, 235, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.35); }
+    .badge-medium { background: var(--bg-surface-subtle); color: var(--text-secondary); border-color: var(--border-subtle); }
+    .badge-critical { background: rgba(220, 38, 38, 0.18); color: #f87171; border-color: rgba(239, 68, 68, 0.4); }
+    .badge-high { background: rgba(217, 119, 6, 0.18); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); }
+    .badge-low { background: rgba(22, 101, 52, 0.18); color: #4ade80; border-color: rgba(34, 197, 94, 0.4); }
+
+    /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      background: var(--bg-surface);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 12px;
+    }
+    table.data-table th {
+      background: var(--table-header);
+      color: var(--text-secondary);
+      font-weight: 600;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+    table.data-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+    }
+    table.data-table tbody tr:hover td {
+      background: var(--bg-surface-hover);
+      cursor: pointer;
+    }
+
+    /* Forms & Inputs */
+    .form-group { margin-bottom: 12px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      font-family: var(--font-mono);
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 7px 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.12s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent-primary);
+    }
+    .form-textarea { resize: vertical; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.12s;
+    }
+    .btn-primary { background: var(--accent-primary); color: #ffffff; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      background: var(--bg-surface-subtle);
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--text-muted);
+    }
+    .btn-sm { padding: 3px 8px; font-size: 11px; }
+
+    /* Grid Layouts */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    /* TracePath Multi-Hop Flow Component */
+    .tracepath-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tracepath-step {
+      display: flex;
+      align-items: stretch;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.12s;
+    }
+    .tracepath-step:hover {
+      border-color: var(--accent-primary);
+    }
+    .tracepath-step-badge {
+      width: 70px;
+      background: var(--bg-surface-subtle);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+    .tracepath-step-content {
+      flex: 1;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* Interactive Graph Canvas */
+    #graph-container {
+      width: 100%;
+      height: 480px;
+      background-color: var(--graph-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    #graph-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .graph-toolbar {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+      background: var(--bg-surface-subtle);
+      border: 1px solid var(--border-subtle);
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    /* Modals & Drawers */
+    .overlay-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 1000;
+      display: flex;
+    }
+    .modal-center {
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      width: 620px;
+      max-width: 90vw;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    .drawer-right {
+      justify-content: flex-end;
+    }
+    .drawer-card {
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-strong);
+      width: 480px;
+      max-width: 90vw;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+    }
+    .overlay-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-surface-subtle);
+    }
+    .overlay-body {
+      padding: 16px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .overlay-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: var(--bg-surface-subtle);
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+  </style>
+</head>
+<body>
+
+  <!-- Top Institutional Bar -->
+  <header id="top-header">
+    <div class="brand-section">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <div>
+        <div class="brand-title">
+          <span>VASPTrace</span>
+          <span class="badge badge-medium" style="font-size: 9px; padding: 1px 4px;">SIH26183</span>
+        </div>
+        <div class="brand-subtitle">Ministry of Home Affairs &bull; Indian Cybercrime Coordination Centre (I4C)</div>
+      </div>
+    </div>
+
+    <!-- Header Controls Toolbar -->
+    <div class="header-controls">
+      <!-- Theme Switcher -->
+      <div style="display: flex; align-items: center; gap: 4px; background: var(--bg-surface-subtle); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-subtle);">
+        <span style="font-size: 10px; font-family: var(--font-mono); color: var(--text-muted);">PALETTE:</span>
+        <select id="theme-selector" class="form-select font-mono" style="padding: 2px 4px; font-size: 11px; width: 115px; background: transparent; border: none; color: var(--text-primary); cursor: pointer;" onchange="changeTheme(this.value)">
+          <option value="cyber-slate" selected>Cyber Slate</option>
+          <option value="deep-cobalt">Deep Cobalt</option>
+          <option value="tactical-amber">Tactical Amber</option>
+          <option value="govcloud-light">GovCloud Light</option>
+        </select>
+      </div>
+
+      <button class="btn btn-secondary btn-sm font-mono" onclick="openSearchModal()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Search (Ctrl+K)
+      </button>
+
+      <!-- Data Provenance Mode Switcher -->
+      <div style="display: flex; background: var(--bg-surface-subtle); padding: 2px; border-radius: 4px; border: 1px solid var(--border-subtle);">
+        <button id="mode-demo-btn" class="btn btn-sm font-mono" style="background: #b45309; color: #fff; padding: 2px 8px;" onclick="setDataMode('DEMO')">
+          DEMO
+        </button>
+        <button id="mode-live-btn" class="btn btn-sm font-mono" style="background: transparent; color: var(--text-muted); padding: 2px 8px;" onclick="setDataMode('LIVE')">
+          LIVE RPC
+        </button>
+      </div>
+
+      <!-- Surveillance Alert Trigger -->
+      <button class="btn btn-secondary btn-sm" onclick="navigateTo('alerts')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span id="top-alert-count" class="nav-badge-count">3</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Application Body -->
+  <div id="app-body">
+    <!-- Left Navigation Sidebar -->
+    <aside id="sidebar">
+      <div class="nav-section-title">Forensic Ingestion</div>
+      <button class="nav-item active" onclick="navigateTo('workspace')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+          <span>Workspace Intake</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('cases')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+          <span>Case Management</span>
+        </div>
+      </button>
+
+      <div class="nav-section-title" style="margin-top: 6px;">Multi-Hop Analytics</div>
+      <button class="nav-item" onclick="navigateTo('tracepath')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>TracePath Flow (1-5 Hops)</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('graph')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>Interactive Graph</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('clusters')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+          <span>Wallet Clustering</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('layering')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Layering Detection</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('crosschain')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+          <span>Cross-Chain Bridges</span>
+        </div>
+      </button>
+
+      <div class="nav-section-title" style="margin-top: 6px;">Surveillance & VASP</div>
+      <button class="nav-item" onclick="navigateTo('monitoring')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h1m16 0h1M12 3v1m0 16v1"/></svg>
+          <span>Live Wallet Monitoring</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('alerts')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span>Smart Alerts</span>
+        </div>
+        <span class="nav-badge-count" id="sidebar-alert-badge">3</span>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('entities')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>
+          <span>VASP & Entity Registry</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('fraudlibrary')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+          <span>Fraud Pattern Library</span>
+        </div>
+      </button>
+
+      <div class="nav-section-title" style="margin-top: 6px;">Forensic Ledger & Dossier</div>
+      <button class="nav-item" onclick="navigateTo('wallet')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <span>Wallet Intelligence</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('transactions')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+          <span>Transactions Ledger</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('timeline')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Forensic Timeline</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('evidence')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Evidence Locker</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('reports')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Standardized Reports</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('analytics')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Executive Analytics</span>
+        </div>
+      </button>
+
+      <div class="nav-section-title" style="margin-top: 6px;">System Operations</div>
+      <button class="nav-item" onclick="navigateTo('datasources')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          <span>Data Sources & RPC</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('system')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span>System Health</span>
+        </div>
+      </button>
+
+      <button class="nav-item" onclick="navigateTo('settings')">
+        <div style="display: flex; align-items: center;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>LEA Settings</span>
+        </div>
+      </button>
+
+      <!-- Sidebar Footer -->
+      <div style="margin-top: auto; padding: 12px 14px; border-top: 1px solid var(--sidebar-border); background: rgba(0,0,0,0.2); font-size: 10px; font-family: var(--font-mono); color: var(--sidebar-text);">
+        <div>STATUS: <span style="color: #22c55e; font-weight: 700;">OPERATIONAL</span></div>
+        <div style="margin-top: 2px;">VASPTrace v1.0 &bull; I4C CyTrain</div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Surface -->
+    <div id="main-content-wrapper">
+      <!-- Active Investigation Breadcrumb Strip -->
+      <div id="active-dossier-strip">
+        <div class="dossier-item">
+          <span class="dossier-label">ACTIVE CASE:</span>
+          <span id="strip-case-id" class="dossier-val" style="color: var(--accent-primary);">I4C-2026-INV-8492</span>
+          <span class="dossier-sep">|</span>
+          <span class="dossier-label">SUSPECT WALLET:</span>
+          <span id="strip-wallet" class="dossier-val">0x71C2a3628F5c36C059B880bF202bE6325Fe8912e</span>
+          <span class="dossier-sep">|</span>
+          <span class="dossier-label">NETWORK:</span>
+          <span id="strip-network" class="dossier-val">ETH</span>
+        </div>
+        <div class="dossier-item">
+          <span class="badge badge-critical" id="strip-risk-badge">CRITICAL RISK</span>
+        </div>
+      </div>
+
+      <main id="main-content">
+        <div id="view-root"></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Search Modal -->
+  <div id="search-modal" class="overlay-backdrop modal-center" style="display: none;" onclick="if(event.target===this) closeSearchModal()">
+    <div class="modal-card">
+      <div class="overlay-header">
+        <div style="font-weight: 700; font-size: 12px; font-family: var(--font-mono); color: var(--text-secondary);">GLOBAL FORENSIC SEARCH</div>
+        <button class="btn btn-secondary btn-sm" onclick="closeSearchModal()">&times;</button>
+      </div>
+      <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-subtle);">
+        <input type="text" id="global-search-input" placeholder="Enter wallet address, tx hash, cluster, NCRP ref, or entity name..." class="form-input font-mono" oninput="handleGlobalSearch(this.value)">
+      </div>
+      <div class="overlay-body" id="search-results-body">
+        <div style="text-align: center; color: var(--text-muted); padding: 20px; font-family: var(--font-mono); font-size: 11px;">
+          Type at least 2 characters to scan the relational database...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Dossier Drawer -->
+  <div id="drawer-container" class="overlay-backdrop drawer-right" style="display: none;" onclick="if(event.target===this) closeDrawer()">
+    <div class="drawer-card">
+      <div class="overlay-header">
+        <div id="drawer-title" style="font-weight: 700; font-size: 12px; font-family: var(--font-mono); color: var(--text-primary);">INSPECTION DOSSIER</div>
+        <button class="btn btn-secondary btn-sm" onclick="closeDrawer()">&times;</button>
+      </div>
+      <div class="overlay-body" id="drawer-content"></div>
+      <div class="overlay-footer" id="drawer-footer">
+        <button class="btn btn-secondary" onclick="closeDrawer()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Scripting -->
+  <script>
+    let currentView = 'workspace';
+    let dataMode = 'DEMO';
+    let activeInvestigation = null;
+    let alertsList = [];
+    let entitiesList = [];
+    let graphFilter = { hop: 'ALL', entity: 'ALL', risk: 'ALL' };
+
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('forensics-theme', themeName);
+      document.getElementById('theme-selector').value = themeName;
+      if (currentView === 'graph') renderInteractiveSVGGraph();
+    }
+
+    async function initApp() {
+      const savedTheme = localStorage.getItem('forensics-theme') || 'cyber-slate';
+      changeTheme(savedTheme);
+
+      try {
+        const altsRes = await fetch('/api/alerts');
+        alertsList = await altsRes.json();
+        updateAlertCounts();
+
+        const entRes = await fetch('/api/entities');
+        entitiesList = await entRes.json();
+
+        const invRes = await fetch('/api/investigations/I4C-2026-INV-8492');
+        if (invRes.ok) {
+          activeInvestigation = await invRes.json();
+          updateDossierStrip();
+        }
+      } catch (err) {
+        console.error('Initial state fetch error:', err);
+      }
+      renderCurrentView();
+    }
+
+    function updateAlertCounts() {
+      const unread = alertsList.filter(a => a.status === 'NEW').length;
+      document.getElementById('top-alert-count').innerText = unread;
+      document.getElementById('sidebar-alert-badge').innerText = unread;
+    }
+
+    function updateDossierStrip() {
+      if (!activeInvestigation) return;
+      document.getElementById('strip-case-id').innerText = activeInvestigation.caseId;
+      document.getElementById('strip-wallet').innerText = activeInvestigation.walletAddress;
+      document.getElementById('strip-network').innerText = activeInvestigation.network;
+      const badge = document.getElementById('strip-risk-badge');
+      const lvl = activeInvestigation.riskAssessment?.classification || 'CRITICAL';
+      badge.className = `badge badge-${lvl.toLowerCase()}`;
+      badge.innerText = `${lvl} RISK`;
+    }
+
+    function setDataMode(mode) {
+      dataMode = mode;
+      document.getElementById('mode-demo-btn').style.background = mode === 'DEMO' ? '#b45309' : 'transparent';
+      document.getElementById('mode-demo-btn').style.color = mode === 'DEMO' ? '#ffffff' : 'var(--text-muted)';
+      document.getElementById('mode-live-btn').style.background = mode === 'LIVE' ? '#166534' : 'transparent';
+      document.getElementById('mode-live-btn').style.color = mode === 'LIVE' ? '#ffffff' : 'var(--text-muted)';
+      renderCurrentView();
+    }
+
+    function navigateTo(viewId) {
+      currentView = viewId;
+      document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.nav-item')).find(b => b.innerText.toLowerCase().includes(viewId.toLowerCase()));
+      if (activeBtn) activeBtn.classList.add('active');
+      renderCurrentView();
+    }
+
+    function renderCurrentView() {
+      const root = document.getElementById('view-root');
+      if (currentView === 'workspace') renderWorkspaceView(root);
+      else if (currentView === 'cases') renderCasesView(root);
+      else if (currentView === 'tracepath') renderTracePathView(root);
+      else if (currentView === 'graph') renderGraphView(root);
+      else if (currentView === 'clusters') renderClustersView(root);
+      else if (currentView === 'layering') renderLayeringView(root);
+      else if (currentView === 'crosschain') renderCrossChainView(root);
+      else if (currentView === 'monitoring') renderMonitoringView(root);
+      else if (currentView === 'alerts') renderAlertsView(root);
+      else if (currentView === 'entities') renderEntitiesView(root);
+      else if (currentView === 'fraudlibrary') renderFraudLibraryView(root);
+      else if (currentView === 'wallet') renderWalletView(root);
+      else if (currentView === 'transactions') renderTransactionsView(root);
+      else if (currentView === 'timeline') renderTimelineView(root);
+      else if (currentView === 'evidence') renderEvidenceView(root);
+      else if (currentView === 'reports') renderReportsView(root);
+      else if (currentView === 'analytics') renderAnalyticsView(root);
+      else if (currentView === 'datasources') renderDataSourcesView(root);
+      else if (currentView === 'system') renderSystemView(root);
+      else if (currentView === 'settings') renderSettingsView(root);
+    }
+
+    // 1. INVESTIGATION WORKSPACE
+    function renderWorkspaceView(root) {
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">INVESTIGATION WORKSPACE</div>
+              <div class="panel-subtitle">Automated Blockchain Ingestion, Multi-Hop Traversal & VASP Attribution</div>
+            </div>
+            <span class="badge ${dataMode === 'LIVE' ? 'badge-live' : 'badge-demo'}">MODE: ${dataMode} DATA</span>
+          </div>
+
+          <div class="panel-body">
+            <!-- Dedicated Preset Scenarios Toolbar -->
+            <div class="presets-bar">
+              <span class="presets-label">LOAD DEMO SCENARIO:</span>
+              <button class="btn btn-secondary btn-sm font-mono" onclick="loadPreset('investment')">Case 1: Investment Fraud (ETH)</button>
+              <button class="btn btn-secondary btn-sm font-mono" onclick="loadPreset('phishing')">Case 2: Extortion (BTC)</button>
+              <button class="btn btn-secondary btn-sm font-mono" onclick="loadPreset('ransomware')">Case 3: Ransomware (TRON)</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;">
+              <!-- Intake Form -->
+              <div>
+                <div id="intake-error" style="display: none; padding: 8px 12px; background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; border-radius: 4px; margin-bottom: 12px; font-family: var(--font-mono); font-size: 11px;"></div>
+
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Case Identifier *</label>
+                    <input type="text" id="intake-case-id" class="form-input font-mono" value="I4C-2026-INV-8492">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Complaint / NCRP Reference</label>
+                    <input type="text" id="intake-complaint-ref" class="form-input font-mono" value="NCRP-2026-092834-DEL">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Suspect Wallet Address *</label>
+                  <input type="text" id="intake-wallet" class="form-input font-mono" value="0x71C2a3628F5c36C059B880bF202bE6325Fe8912e">
+                </div>
+
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Blockchain Network</label>
+                    <select id="intake-network" class="form-select font-mono">
+                      <option value="ETH" selected>Ethereum Mainnet (ETH)</option>
+                      <option value="POLYGON">Polygon PoS (POL)</option>
+                      <option value="BSC">BNB Smart Chain (BSC)</option>
+                      <option value="BTC">Bitcoin (BTC)</option>
+                      <option value="TRON">Tron TRC-20 (TRX/USDT)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Incident Type</label>
+                    <select id="intake-incident" class="form-select">
+                      <option value="Investment Fraud" selected>Investment Fraud (Yield Farming)</option>
+                      <option value="Task Fraud">Task Fraud (Part-Time Scam)</option>
+                      <option value="Phishing">Law Enforcement Extortion / Phishing</option>
+                      <option value="Ransomware">Enterprise Ransomware Settlement</option>
+                      <option value="Sextortion">Sextortion & Blackmail</option>
+                      <option value="Darknet-related Fraud">Darknet-related Fraud</option>
+                      <option value="Organized Cyber Fraud">Organized Cyber Fraud</option>
+                      <option value="Other">Other Cyber Incident</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Investigation Priority</label>
+                    <select id="intake-priority" class="form-select font-mono">
+                      <option value="CRITICAL" selected>P0 - CRITICAL (Active Drain)</option>
+                      <option value="HIGH">P1 - HIGH (Asset Movement)</option>
+                      <option value="MEDIUM">P2 - MEDIUM (Routine Docket)</option>
+                      <option value="LOW">P3 - LOW</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Hop Analysis Depth</label>
+                    <select id="intake-hop" class="form-select font-mono font-bold">
+                      <option value="1">1 Hop (Direct Counterparties)</option>
+                      <option value="2">2 Hops (Layering & Mules)</option>
+                      <option value="3" selected>3 Hops (VASP & Exchange Settlements)</option>
+                      <option value="4">4 Hops (Deep Inter-VASP Flow)</option>
+                      <option value="5">5 Hops (Maximum Extended Graph)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Investigator Case Notes</label>
+                  <textarea id="intake-notes" rows="2" class="form-textarea">Victim lured into high-yield staking pool on Telegram. Suspect collector address routed funds immediately through 2 intermediate mule wallets before exchange deposit.</textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 14px; border-top: 1px solid var(--border-subtle); padding-top: 14px;">
+                  <button class="btn btn-primary font-mono" style="padding: 9px 24px; font-size: 13px;" onclick="executeStartAnalysis()">
+                    START FORENSIC ANALYSIS
+                  </button>
+                </div>
+              </div>
+
+              <!-- Automated Pipeline Execution Monitor -->
+              <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 14px; font-family: var(--font-mono); font-size: 11px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; margin-bottom: 10px;">
+                  <span style="font-weight: 700; color: var(--accent-primary);">AUTOMATED FORENSIC PIPELINE</span>
+                  <span id="pipeline-status-tag" class="badge badge-low">READY</span>
+                </div>
+                <div id="pipeline-stages-list" style="display: flex; flex-direction: column; gap: 6px;">
+                  <div class="p-step" style="color: var(--text-muted);">[01] Wallet Address & Checksum Validation</div>
+                  <div class="p-step" style="color: var(--text-muted);">[02] Blockchain Node & Network Ingestion</div>
+                  <div class="p-step" style="color: var(--text-muted);">[03] Transaction Normalization & Counterparties</div>
+                  <div class="p-step" style="color: var(--text-muted);">[04] Directed Graph Relationship Construction</div>
+                  <div class="p-step" style="color: var(--text-muted);">[05] Multi-Hop Layering & Velocity Tracing</div>
+                  <div class="p-step" style="color: var(--text-muted);">[06] Intermediary Mule & Peel Chain Detection</div>
+                  <div class="p-step" style="color: var(--text-muted);">[07] FIU-IND & Global VASP Matching</div>
+                  <div class="p-step" style="color: var(--text-muted);">[08] Rule-Based Explainable Risk Evaluation</div>
+                  <div class="p-step" style="color: var(--text-muted);">[09] Cryptographic Evidence Seal (SHA-256)</div>
+                  <div class="p-step" style="color: var(--text-muted);">[10] Legal Subpoena & Section 91 Drafting</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function loadPreset(type) {
+      if (type === 'investment') {
+        document.getElementById('intake-case-id').value = 'I4C-2026-INV-8492';
+        document.getElementById('intake-complaint-ref').value = 'NCRP-2026-092834-DEL';
+        document.getElementById('intake-wallet').value = '0x71C2a3628F5c36C059B880bF202bE6325Fe8912e';
+        document.getElementById('intake-network').value = 'ETH';
+        document.getElementById('intake-incident').value = 'Investment Fraud';
+        document.getElementById('intake-priority').value = 'CRITICAL';
+        document.getElementById('intake-hop').value = '3';
+      } else if (type === 'phishing') {
+        document.getElementById('intake-case-id').value = 'I4C-2026-INV-7104';
+        document.getElementById('intake-complaint-ref').value = 'NCRP-2026-081192-MUM';
+        document.getElementById('intake-wallet').value = 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh';
+        document.getElementById('intake-network').value = 'BTC';
+        document.getElementById('intake-incident').value = 'Phishing';
+        document.getElementById('intake-priority').value = 'HIGH';
+        document.getElementById('intake-hop').value = '2';
+      } else {
+        document.getElementById('intake-case-id').value = 'I4C-2026-INV-9921';
+        document.getElementById('intake-complaint-ref').value = 'NCRP-2026-100412-BLR';
+        document.getElementById('intake-wallet').value = 'TYDzsYUE22Dcf3nu7B7H8KvZ9B8qF1yU5C';
+        document.getElementById('intake-network').value = 'TRON';
+        document.getElementById('intake-incident').value = 'Ransomware';
+        document.getElementById('intake-priority').value = 'CRITICAL';
+        document.getElementById('intake-hop').value = '2';
+      }
+    }
+
+    async function executeStartAnalysis() {
+      const caseId = document.getElementById('intake-case-id').value;
+      const walletAddress = document.getElementById('intake-wallet').value;
+      const network = document.getElementById('intake-network').value;
+      const incidentType = document.getElementById('intake-incident').value;
+      const priority = document.getElementById('intake-priority').value;
+      const hopDepth = Number(document.getElementById('intake-hop').value);
+      const complaintReference = document.getElementById('intake-complaint-ref').value;
+      const notes = document.getElementById('intake-notes').value;
+
+      const valRes = await fetch('/api/investigations/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: walletAddress, network })
+      });
+      const val = await valRes.json();
+      if (!val.isValid) {
+        document.getElementById('intake-error').style.display = 'block';
+        document.getElementById('intake-error').innerText = `Address Validation Error: ${val.error}`;
+        return;
+      }
+      document.getElementById('intake-error').style.display = 'none';
+
+      const steps = document.querySelectorAll('.p-step');
+      const tag = document.getElementById('pipeline-status-tag');
+      tag.className = 'badge badge-high';
+      tag.innerText = 'EXECUTING';
+
+      for (let i = 0; i < steps.length; i++) {
+        steps[i].style.color = 'var(--accent-primary)';
+        const txt = steps[i].innerText;
+        steps[i].innerText = txt.replace(/\[\d+\]/, '⏳ RUNNING');
+        await new Promise(r => setTimeout(r, 120));
+        steps[i].style.color = '#4ade80';
+        steps[i].innerText = txt.replace(/\[\d+\]/, '✓ DONE');
+      }
+
+      tag.className = 'badge badge-low';
+      tag.innerText = 'COMPLETE';
+
+      const invRes = await fetch('/api/investigations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ caseId, walletAddress, network, incidentType, priority, hopDepth, dataMode, complaintReference, notes })
+      });
+      activeInvestigation = await invRes.json();
+      updateDossierStrip();
+      navigateTo('tracepath');
+    }
+
+    // 2. CASE MANAGEMENT
+    async function renderCasesView(root) {
+      const res = await fetch('/api/cases');
+      const cases = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">CASE DOSSIERS & COLLABORATIVE INVESTIGATION</div>
+              <div class="panel-subtitle">Centralized law enforcement active investigative records & team assignments</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="navigateTo('workspace')">+ NEW INVESTIGATION</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Case Identifier</th>
+                  <th>Dossier Title & Reference</th>
+                  <th>Incident Type</th>
+                  <th>Reported Suspect Wallet</th>
+                  <th>Investigative Team</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${cases.map(c => `
+                  <tr onclick="openCaseDrawer('${c.caseId}')">
+                    <td class="font-mono font-bold" style="color: var(--accent-primary);">${c.caseId}</td>
+                    <td>
+                      <div class="font-semibold">${c.title}</div>
+                      <div class="text-xs text-muted font-mono">Ref: ${c.complaintReference || 'N/A'}</div>
+                    </td>
+                    <td>${c.incidentType}</td>
+                    <td class="font-mono text-xs">${c.reportedWallet.slice(0,8)}...${c.reportedWallet.slice(-6)} (${c.network})</td>
+                    <td class="text-xs">
+                      <div>Lead: <strong>${c.assignedInvestigator}</strong></div>
+                      ${c.supportingAnalyst ? `<div class="text-muted">Analyst: ${c.supportingAnalyst}</div>` : ''}
+                    </td>
+                    <td><span class="badge badge-${c.priority.toLowerCase()}">${c.priority}</span></td>
+                    <td><span class="badge badge-medium">${c.status}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    async function openCaseDrawer(caseId) {
+      const res = await fetch(`/api/cases/${caseId}`);
+      const data = await res.json();
+      const c = data.caseData;
+
+      // Fetch Case Notes
+      const notesRes = await fetch(`/api/notes?targetType=CASE&targetId=${caseId}`);
+      const notes = await notesRes.json();
+
+      document.getElementById('drawer-title').innerText = `CASE DOSSIER: ${c.caseId}`;
+      document.getElementById('drawer-content').innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 14px; font-size: 12px;">
+          <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+            <div style="font-weight: 700; font-size: 13px; color: var(--text-primary); margin-bottom: 4px;">${c.title}</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Lead Officer: <strong>${c.assignedInvestigator}</strong></div>
+            <div style="font-size: 11px; color: var(--text-muted);">Supporting Analyst: <strong>${c.supportingAnalyst || 'Unassigned'}</strong> &bull; Supervisor: <strong>${c.supervisor || 'N/A'}</strong></div>
+          </div>
+
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px; font-family: var(--font-mono); font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+            <div>SUSPECT WALLET: <strong style="color: var(--text-primary);">${c.reportedWallet}</strong> (${c.network})</div>
+            <div>COMPLAINT REF: <strong>${c.complaintReference || 'N/A'}</strong></div>
+            <div>STATUS: <strong style="color: var(--accent-primary);">${c.status}</strong> &bull; PRIORITY: <strong>${c.priority}</strong></div>
+            ${c.notes ? `<div style="border-top: 1px solid var(--border-subtle); padding-top: 6px; font-family: var(--font-sans); color: var(--text-secondary);"><strong>Initial Notes:</strong> ${c.notes}</div>` : ''}
+          </div>
+
+          <div>
+            <div class="form-label" style="margin-bottom: 6px;">Update Case Status</div>
+            <div style="display: flex; gap: 6px; font-family: var(--font-mono); font-size: 11px;">
+              <button class="btn btn-secondary btn-sm" onclick="updateCaseStatusAction('${c.caseId}', 'IN_PROGRESS')">In Progress</button>
+              <button class="btn btn-secondary btn-sm" onclick="updateCaseStatusAction('${c.caseId}', 'ACTION_REQUIRED')">Action Required</button>
+              <button class="btn btn-secondary btn-sm" onclick="updateCaseStatusAction('${c.caseId}', 'CLOSED')">Close Case</button>
+            </div>
+          </div>
+
+          <!-- Investigator Notes Module -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <div class="form-label" style="margin-bottom: 0;">Investigator Notes (${notes.length})</div>
+              <button class="btn btn-secondary btn-sm font-mono" onclick="promptAddNote('CASE', '${c.caseId}')">+ Add Note</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              ${notes.map(n => `
+                <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 8px; font-size: 11px;">
+                  <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 10px; font-family: var(--font-mono);">
+                    <span>${n.author} (${n.role})</span>
+                    <span>${new Date(n.createdAt).toLocaleTimeString()}</span>
+                  </div>
+                  <div style="color: var(--text-primary); margin-top: 3px;">${n.content}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div>
+            <div class="form-label" style="margin-bottom: 6px;">Audit Trail (${data.auditLogs.length} Events)</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              ${data.auditLogs.map(a => `
+                <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 8px; font-size: 11px;">
+                  <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-weight: 700; color: var(--text-primary);">
+                    <span>${a.action}</span>
+                    <span style="color: var(--text-muted); font-weight: 400;">${new Date(a.timestamp).toLocaleTimeString()}</span>
+                  </div>
+                  <div style="color: var(--text-secondary); margin-top: 2px;">${a.details}</div>
+                  <div style="font-size: 10px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px;">Officer: ${a.user}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('drawer-footer').innerHTML = `
+        <button class="btn btn-primary" onclick="loadCaseIntoWorkspace('${c.caseId}', '${c.reportedWallet}', '${c.network}', '${c.incidentType}'); closeDrawer();">OPEN IN WORKSPACE</button>
+        <button class="btn btn-secondary" onclick="closeDrawer()">Close</button>
+      `;
+      document.getElementById('drawer-container').style.display = 'flex';
+    }
+
+    async function updateCaseStatusAction(caseId, status) {
+      await fetch(`/api/cases/${caseId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      openCaseDrawer(caseId);
+      renderCasesView(document.getElementById('view-root'));
+    }
+
+    function loadCaseIntoWorkspace(caseId, wallet, network, incident) {
+      navigateTo('workspace');
+      setTimeout(() => {
+        document.getElementById('intake-case-id').value = caseId;
+        document.getElementById('intake-wallet').value = wallet;
+        document.getElementById('intake-network').value = network;
+        document.getElementById('intake-incident').value = incident;
+      }, 50);
+    }
+
+    // 3. TRACEPATH — MULTI-HOP FUND TRACING (Feature 1)
+    function renderTracePathView(root) {
+      if (!activeInvestigation) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded. Run an analysis in Workspace.</div></div>`;
+        return;
+      }
+
+      const paths = activeInvestigation.tracePath || [];
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">TRACEPATH — MULTI-HOP FUND TRACING</div>
+              <div class="panel-subtitle">Deterministic hop-by-hop traversal from victim deposit to exchange termination (${paths.length} Active Hops)</div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <span class="badge badge-critical">${activeInvestigation.riskAssessment?.classification || 'CRITICAL'} RISK</span>
+              <span class="badge ${activeInvestigation.dataMode === 'LIVE' ? 'badge-live' : 'badge-demo'}">${activeInvestigation.dataMode} DATA</span>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="tracepath-container">
+              ${paths.map(p => `
+                <div class="tracepath-step" onclick="openNodeDrawer('${p.walletAddress}')">
+                  <div class="tracepath-step-badge">
+                    <span style="font-size: 9px; color: var(--text-muted);">STEP</span>
+                    <span style="font-size: 16px; color: var(--accent-primary);">#${p.hopIndex}</span>
+                  </div>
+                  <div class="tracepath-step-content">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <strong style="color: var(--text-primary); font-size: 13px;">${p.hopLabel}</strong>
+                        <span class="badge badge-external" style="margin-left: 6px;">${p.attribution}</span>
+                      </div>
+                      <div class="font-mono font-bold" style="font-size: 13px; color: #4ade80;">
+                        ${p.amount} ${p.asset} <span style="font-size: 11px; font-weight: normal; color: var(--text-muted);">($${(p.usdValue || 0).toLocaleString()})</span>
+                      </div>
+                    </div>
+
+                    <div class="font-mono text-xs text-muted" style="word-break: break-all;">
+                      Wallet: <strong style="color: var(--text-secondary);">${p.walletAddress}</strong>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 4px; margin-top: 4px; font-size: 11px;">
+                      <div class="font-mono text-muted">
+                        Tx Hash: <span style="color: var(--accent-primary);">${p.txHash.slice(0, 14)}...${p.txHash.slice(-8)}</span>
+                        &bull; Delta: <strong style="color: #fbbf24;">${p.timeFromPrevious}</strong>
+                      </div>
+                      <div style="display: flex; gap: 4px;">
+                        ${(p.riskSignals || []).map(s => `<span class="badge badge-critical">${s}</span>`).join('')}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Interruption / Bridge Alert Boxes -->
+            <div class="grid-2" style="margin-top: 14px;">
+              ${activeInvestigation.crossChainMovement ? `
+                <div style="background: rgba(22, 101, 52, 0.15); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 4px; padding: 10px;">
+                  <div class="font-mono font-bold text-xs" style="color: #4ade80;">CROSS-CHAIN BRIDGE MOVEMENT DETECTED</div>
+                  <div class="text-xs" style="color: var(--text-secondary); margin-top: 3px;">
+                    Routed <strong>${activeInvestigation.crossChainMovement.amount} ${activeInvestigation.crossChainMovement.asset}</strong> via <strong>${activeInvestigation.crossChainMovement.bridge}</strong> from ${activeInvestigation.crossChainMovement.sourceChain} to ${activeInvestigation.crossChainMovement.destinationChain}.
+                  </div>
+                </div>
+              ` : ''}
+
+              ${activeInvestigation.traceInterrupted ? `
+                <div style="background: rgba(220, 38, 38, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 4px; padding: 10px;">
+                  <div class="font-mono font-bold text-xs" style="color: #f87171;">TRACE INTERRUPTION NOTICE (PRIVACY POOL)</div>
+                  <div class="text-xs" style="color: var(--text-secondary); margin-top: 3px;">
+                    ${activeInvestigation.traceInterrupted.reason}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. INTERACTIVE GRAPH (Feature 2)
+    function renderGraphView(root) {
+      if (!activeInvestigation) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded.</div></div>`;
+        return;
+      }
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">INTERACTIVE TRANSACTION GRAPH</div>
+              <div class="panel-subtitle">Directed on-chain fund dispersal network across ${activeInvestigation.hopDepth} hops</div>
+            </div>
+            
+            <!-- Graph Filters -->
+            <div style="display: flex; gap: 8px;">
+              <select class="form-select font-mono text-xs" style="width: 120px;" onchange="graphFilter.hop = this.value; renderInteractiveSVGGraph();">
+                <option value="ALL">All Hops (1-${activeInvestigation.hopDepth})</option>
+                <option value="1">Hop 1 Only</option>
+                <option value="2">Hop 2 Only</option>
+                <option value="3">Hop 3 Only</option>
+              </select>
+              <select class="form-select font-mono text-xs" style="width: 130px;" onchange="graphFilter.entity = this.value; renderInteractiveSVGGraph();">
+                <option value="ALL">All Node Types</option>
+                <option value="EXCHANGE / VASP">Exchanges / VASPs</option>
+                <option value="INTERMEDIARY">Intermediaries</option>
+                <option value="BRIDGE">Bridges</option>
+                <option value="MIXER / TUMBLER">Mixers</option>
+              </select>
+              <button class="btn btn-secondary btn-sm font-mono" onclick="renderInteractiveSVGGraph()">FIT GRAPH</button>
+            </div>
+          </div>
+
+          <div class="panel-body" style="padding: 12px;">
+            <div id="graph-container">
+              <svg id="graph-svg"></svg>
+            </div>
+          </div>
+        </div>
+      `;
+
+      renderInteractiveSVGGraph();
+    }
+
+    function renderInteractiveSVGGraph() {
+      const svg = document.getElementById('graph-svg');
+      if (!svg || !activeInvestigation) return;
+
+      let nodes = activeInvestigation.graphNodes || [];
+      let edges = activeInvestigation.graphEdges || [];
+
+      // Apply Filters
+      if (graphFilter.hop !== 'ALL') {
+        const h = Number(graphFilter.hop);
+        nodes = nodes.filter(n => n.hop === 0 || n.hop === h);
+        const nodeIds = new Set(nodes.map(n => n.id));
+        edges = edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
+      }
+      if (graphFilter.entity !== 'ALL') {
+        nodes = nodes.filter(n => n.type === 'REPORTED WALLET' || n.type === graphFilter.entity);
+        const nodeIds = new Set(nodes.map(n => n.id));
+        edges = edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
+      }
+
+      const hopGroups = {};
+      nodes.forEach(n => {
+        const h = n.hop || 0;
+        if (!hopGroups[h]) hopGroups[h] = [];
+        hopGroups[h].push(n);
+      });
+
+      const positions = {};
+      const colSpacing = 240;
+      const startX = 110;
+
+      Object.entries(hopGroups).forEach(([hStr, group]) => {
+        const h = Number(hStr);
+        const x = startX + h * colSpacing;
+        const rowSpacing = 120;
+        const startY = 220 - ((group.length - 1) * rowSpacing) / 2;
+
+        group.forEach((node, idx) => {
+          positions[node.id] = { x, y: Math.max(65, startY + idx * rowSpacing) };
+        });
+      });
+
+      let svgHTML = `
+        <defs>
+          <pattern id="dotGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" fill="var(--graph-grid)"/>
+          </pattern>
+          <marker id="arr-vasp" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent-primary)"/></marker>
+          <marker id="arr-def" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/></marker>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#dotGrid)"/>
+      `;
+
+      // Hop Separator Labels
+      [0, 1, 2, 3, 4, 5].forEach(h => {
+        const colX = startX + h * colSpacing;
+        const colNames = ['HOP 0: SUSPECT ENTRY', 'HOP 1: FIRST MULES', 'HOP 2: LAYERING / PRIVACY', 'HOP 3: VASP SETTLEMENT', 'HOP 4: DEEP FLOW', 'HOP 5: EXTENDED TRACE'];
+        svgHTML += `
+          <g>
+            <line x1="${colX}" y1="10" x2="${colX}" y2="500" stroke="var(--border-subtle)" stroke-width="1" stroke-dasharray="4,4"/>
+            <text x="${colX}" y="25" fill="var(--text-muted)" font-size="9" font-weight="700" font-family="monospace" text-anchor="middle">${colNames[h] || `HOP ${h}`}</text>
+          </g>
+        `;
+      });
+
+      // Edges
+      edges.forEach(e => {
+        const src = positions[e.source];
+        const tgt = positions[e.target];
+        if (!src || !tgt) return;
+        const midX = (src.x + tgt.x) / 2;
+        const midY = (src.y + tgt.y) / 2;
+        const isVasp = e.hop >= 3;
+
+        svgHTML += `
+          <g style="cursor: pointer;" onclick="openTransactionDrawer('${e.txHash}')">
+            <path d="M ${src.x} ${src.y} Q ${midX} ${midY - 14} ${tgt.x} ${tgt.y}" fill="none" stroke="${isVasp ? 'var(--accent-primary)' : '#64748b'}" stroke-width="2" marker-end="${isVasp ? 'url(#arr-vasp)' : 'url(#arr-def)'}"/>
+            <rect x="${midX - 35}" y="${midY - 22}" width="70" height="15" rx="2" fill="var(--sidebar-surface)" stroke="var(--border-subtle)" stroke-width="1"/>
+            <text x="${midX}" y="${midY - 11}" fill="var(--sidebar-text-bright)" font-size="9" font-weight="700" font-family="monospace" text-anchor="middle">${e.amount} ${e.asset}</text>
+          </g>
+        `;
+      });
+
+      // Nodes
+      nodes.forEach(n => {
+        const pos = positions[n.id];
+        if (!pos) return;
+
+        const isReported = n.type === 'REPORTED WALLET';
+        const isVasp = n.type === 'EXCHANGE / VASP';
+        const isMixer = n.type === 'MIXER / TUMBLER';
+        const isBridge = n.type === 'BRIDGE';
+
+        let borderAccent = '#64748b';
+        if (isReported) { borderAccent = '#e11d48'; }
+        else if (isVasp) { borderAccent = 'var(--accent-primary)'; }
+        else if (isMixer) { borderAccent = '#dc2626'; }
+        else if (isBridge) { borderAccent = '#0d9488'; }
+
+        svgHTML += `
+          <g transform="translate(${pos.x}, ${pos.y})" style="cursor: pointer;" onclick="openNodeDrawer('${n.id}')">
+            <rect x="-80" y="-28" width="160" height="56" rx="4" fill="var(--node-bg)" stroke="var(--node-border)" stroke-width="1"/>
+            <rect x="-80" y="-28" width="5" height="56" rx="1" fill="${borderAccent}"/>
+            <text x="-70" y="-12" fill="var(--text-muted)" font-size="8" font-weight="700" font-family="monospace">${n.type}</text>
+            <text x="-70" y="5" fill="var(--node-text)" font-size="10" font-weight="700">${n.entityName ? (n.entityName.length > 18 ? n.entityName.slice(0,16)+'...' : n.label) : n.label}</text>
+            <text x="-70" y="18" fill="var(--text-secondary)" font-size="8.5" font-family="monospace">${n.id.slice(0,6)}...${n.id.slice(-4)}</text>
+          </g>
+        `;
+      });
+
+      svg.innerHTML = svgHTML;
+    }
+
+    // 5. WALLET CLUSTERING (Feature 3)
+    async function renderClustersView(root) {
+      const res = await fetch('/api/clusters');
+      const clusters = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">WALLET CLUSTERING & CO-SPENDING ANALYSIS</div>
+              <div class="panel-subtitle">Heuristic grouping based on common input ownership, gas relayer linkages, and synchronized timings</div>
+            </div>
+            <span class="badge badge-external">HEURISTIC INFERENCE ONLY</span>
+          </div>
+
+          <div class="panel-body">
+            <!-- Strict Mandatory Disclaimer -->
+            <div style="background: rgba(217, 119, 6, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 4px; padding: 10px; font-size: 11px; color: #fbbf24; margin-bottom: 14px;">
+              <strong>LEGAL EVIDENTIARY DISCLAIMER:</strong> Wallet clusters represent probabilistic heuristic groupings and must NEVER be presented as judicial proof of common ownership.
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              ${clusters.map(cl => `
+                <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px; margin-bottom: 8px;">
+                    <div>
+                      <span class="font-mono font-bold" style="font-size: 13px; color: var(--accent-primary);">${cl.clusterId}</span>
+                      <span class="badge badge-medium" style="margin-left: 6px;">${cl.network}</span>
+                      <strong style="margin-left: 8px; color: var(--text-primary); font-size: 13px;">${cl.possibleEntity}</strong>
+                    </div>
+                    <div>
+                      <span class="badge badge-external">${cl.confidence}</span>
+                      <span class="badge badge-low" style="margin-left: 4px;">${cl.walletCount} Addresses</span>
+                    </div>
+                  </div>
+
+                  <div class="text-xs text-secondary" style="margin-bottom: 8px;">
+                    <strong>Evidence Rationale:</strong> ${cl.rationale}
+                  </div>
+
+                  <div class="form-label" style="margin-bottom: 4px;">Associated Wallets in Cluster</div>
+                  <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    ${(cl.relatedWallets || []).map(w => `
+                      <span class="font-mono text-xs" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 4px 8px; border-radius: 3px; cursor: pointer;" onclick="openNodeDrawer('${w}')">
+                        ${w}
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 6. LAYERING & PATTERN DETECTION (Feature 4)
+    function renderLayeringView(root) {
+      if (!activeInvestigation) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded.</div></div>`;
+        return;
+      }
+
+      const pats = activeInvestigation.layeringPatterns || [];
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">LAYERING & SUSPICIOUS FUND-MOVEMENT DETECTION</div>
+              <div class="panel-subtitle">Automated heuristic detection of rapid velocity, peel chains, and cross-chain routing</div>
+            </div>
+            <span class="badge badge-critical">${pats.length} Patterns Identified</span>
+          </div>
+
+          <div class="panel-body">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${pats.map(p => `
+                <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <div>
+                      <strong style="color: var(--text-primary); font-size: 13px;">${p.patternName}</strong>
+                      <span class="badge badge-critical" style="margin-left: 6px;">${p.severity}</span>
+                    </div>
+                    <span class="font-mono text-xs text-muted">${new Date(p.timestamp).toUTCString()}</span>
+                  </div>
+
+                  <div class="text-xs text-secondary" style="margin-bottom: 6px;">
+                    ${p.observedBehaviour}
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 6px; font-size: 11px;">
+                    <div class="font-mono text-muted">
+                      Affected: <strong style="color: var(--text-primary);">${p.affectedWallets.length} Wallets</strong> &bull; Evidence: <span style="color: #4ade80;">${p.evidence}</span>
+                    </div>
+                    <button class="btn btn-secondary btn-sm font-mono" onclick="navigateTo('tracepath')">View in TracePath ↗</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 7. CROSS-CHAIN FUND TRACKING (Feature 7)
+    function renderCrossChainView(root) {
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">CROSS-CHAIN FUND TRACKING & BRIDGE ANALYTICS</div>
+              <div class="panel-subtitle">Multi-network liquidity bridge lock and mint/release event correlation</div>
+            </div>
+            <span class="badge badge-external">HOP & STARGATE INDEXED</span>
+          </div>
+
+          <div class="panel-body">
+            <!-- Diagram Flow -->
+            <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 16px; margin-bottom: 14px;">
+              <div class="form-label" style="margin-bottom: 8px;">Observed Cross-Chain Routing Sequence</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; font-family: var(--font-mono); font-size: 11px;">
+                <div style="background: var(--bg-surface); padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: 4px; text-align: center;">
+                  <div style="color: var(--text-muted); font-size: 9px;">SOURCE CHAIN</div>
+                  <strong style="color: var(--accent-primary);">Ethereum Mainnet</strong>
+                  <div>0x71C2...912e</div>
+                </div>
+                <span>→</span>
+                <div style="background: var(--bg-surface); padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: 4px; text-align: center;">
+                  <div style="color: var(--text-muted); font-size: 9px;">BRIDGE CONTRACT</div>
+                  <strong style="color: #0d9488;">Hop Protocol Router</strong>
+                  <div>15,000 USDT Lock</div>
+                </div>
+                <span>→</span>
+                <div style="background: var(--bg-surface); padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: 4px; text-align: center;">
+                  <div style="color: var(--text-muted); font-size: 9px;">DESTINATION CHAIN</div>
+                  <strong style="color: #a855f7;">Polygon PoS</strong>
+                  <div>0x8831...a9b2</div>
+                </div>
+                <span>→</span>
+                <div style="background: var(--bg-surface); padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: 4px; text-align: center;">
+                  <div style="color: var(--text-muted); font-size: 9px;">SETTLEMENT VASP</div>
+                  <strong style="color: #4ade80;">WazirX India Gateway</strong>
+                  <div>FIU-IND Reg</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 4px;">
+                <div class="font-bold font-mono" style="color: var(--accent-primary);">Canonical Bridge Telemetry</div>
+                <div>Lock Transaction: <strong class="font-mono">0x4f36b55719283471928347192847192834719283471928347192834719283471</strong></div>
+                <div>Relayer Tx: <strong class="font-mono">0x8831a9b201948192834719283471928347192834719283471928347192834719</strong></div>
+                <div>Attribution Confidence: <span class="badge badge-low">HIGH CONFIDENCE</span></div>
+              </div>
+
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 4px;">
+                <div class="font-bold font-mono" style="color: var(--accent-primary);">Fallback & Unresolved Handling</div>
+                <div class="text-secondary">When cross-chain bridge destination cannot be programmatically resolved from relayer logs:</div>
+                <div style="background: var(--bg-surface-subtle); padding: 6px; border-radius: 3px; font-family: var(--font-mono); color: #fbbf24;">
+                  &ldquo;Cross-chain movement detected — destination attribution unavailable.&rdquo;
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 8. REAL-TIME WALLET MONITORING (Feature 5)
+    async function renderMonitoringView(root) {
+      const res = await fetch('/api/monitored-wallets');
+      const monitors = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">REAL-TIME WALLET MONITORING & SURVEILLANCE</div>
+              <div class="panel-subtitle">Active automated mempool & block listeners (${monitors.length} Active Targets)</div>
+            </div>
+            <button class="btn btn-primary btn-sm font-mono" onclick="promptAddMonitor()">+ MONITOR WALLET</button>
+          </div>
+
+          <div class="panel-body">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${monitors.map(m => `
+                <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <div>
+                      <span class="badge badge-live">MONITORING ACTIVE</span>
+                      <span class="badge badge-medium" style="margin-left: 4px;">${m.network}</span>
+                      <strong class="font-mono" style="margin-left: 8px; color: var(--text-primary);">${m.wallet}</strong>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                      <button class="btn btn-secondary btn-sm font-mono" style="color: #fbbf24;" onclick="simulateWalletActivity('${m.id}')">⚡ Trigger Sim Alert</button>
+                      <button class="btn btn-secondary btn-sm font-mono" style="color: #f87171;" onclick="deleteMonitor('${m.id}')">Remove</button>
+                    </div>
+                  </div>
+
+                  <div class="grid-3 font-mono text-xs text-muted" style="background: var(--bg-surface-subtle); padding: 6px 10px; border-radius: 3px; border: 1px solid var(--border-subtle);">
+                    <div>Threshold: <strong style="color: var(--text-primary);">${m.amountThreshold} ${m.network}</strong></div>
+                    <div>Risk Alert: <strong style="color: #f87171;">${m.riskThreshold}</strong></div>
+                    <div>Surveillance Duration: <strong>${m.durationDays} Days</strong></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function promptAddMonitor() {
+      const wallet = prompt("Enter Wallet Address to Monitor:", "0x71C2a3628F5c36C059B880bF202bE6325Fe8912e");
+      if (!wallet) return;
+      await fetch('/api/monitored-wallets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet, network: 'ETH', amountThreshold: 1.0, riskThreshold: 'HIGH', durationDays: 30 })
+      });
+      renderMonitoringView(document.getElementById('view-root'));
+    }
+
+    async function simulateWalletActivity(id) {
+      await fetch(`/api/monitored-wallets/${id}/simulate-activity`, { method: 'POST' });
+      alert("Simulated on-chain movement detected! High-priority alert raised in Smart Alert System.");
+      const altsRes = await fetch('/api/alerts');
+      alertsList = await altsRes.json();
+      updateAlertCounts();
+      renderMonitoringView(document.getElementById('view-root'));
+    }
+
+    async function deleteMonitor(id) {
+      await fetch(`/api/monitored-wallets/${id}`, { method: 'DELETE' });
+      renderMonitoringView(document.getElementById('view-root'));
+    }
+
+    // 9. SMART ALERT SYSTEM (Feature 6)
+    function renderAlertsView(root) {
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">SMART ALERT SYSTEM</div>
+              <div class="panel-subtitle">
+                Automated triage on rapid fund sweeps, VASP deposits, and privacy pool interactions (${alertsList.length} Total)
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${alertsList.map(a => `
+                <div style="background: var(--bg-surface); border: 1px solid ${a.status === 'NEW' ? 'var(--accent-primary)' : 'var(--border-subtle)'}; border-radius: 4px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 3px;">
+                      <span class="font-mono font-bold" style="color: var(--accent-primary);">${a.caseId}</span>
+                      <span class="font-bold text-xs">${a.trigger}</span>
+                      <span class="badge badge-critical">${a.severity}</span>
+                      <span class="badge badge-medium">${a.status}</span>
+                    </div>
+                    <div class="text-xs text-secondary"><strong>Evidence:</strong> ${a.evidence}</div>
+                    <div class="text-xs font-mono text-muted" style="margin-top: 2px;">Wallet: ${a.wallet} &bull; ${new Date(a.timestamp).toLocaleString()}</div>
+                  </div>
+
+                  <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-secondary btn-sm font-mono" onclick="openNodeDrawer('${a.wallet}')">View Trace</button>
+                    ${a.status === 'NEW' ? `<button class="btn btn-primary btn-sm font-mono" onclick="updateAlertStatus('${a.id}', 'ACKNOWLEDGED')">Acknowledge</button>` : ''}
+                    ${a.status === 'ACKNOWLEDGED' ? `<button class="btn btn-secondary btn-sm font-mono" onclick="updateAlertStatus('${a.id}', 'INVESTIGATING')">Investigate</button>` : ''}
+                    ${a.status === 'INVESTIGATING' ? `<button class="btn btn-secondary btn-sm font-mono" onclick="updateAlertStatus('${a.id}', 'RESOLVED')">Resolve</button>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function updateAlertStatus(id, status) {
+      await fetch(`/api/alerts/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      alertsList = alertsList.map(a => a.id === id ? { ...a, status } : a);
+      updateAlertCounts();
+      renderAlertsView(document.getElementById('view-root'));
+    }
+
+    // 10. VASP & ENTITY REGISTRY (Feature 9)
+    function renderEntitiesView(root) {
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">ENTITY & VASP INTELLIGENCE REGISTRY</div>
+              <div class="panel-subtitle">
+                Verified Exchange gateways, FIU-IND registered entities, and LEA subpoena procedures (${entitiesList.length} Records)
+              </div>
+            </div>
+            <span class="badge badge-external">FIU-IND COMPLIANCE ACTIVE</span>
+          </div>
+
+          <div class="panel-body">
+            <div class="grid-2">
+              ${entitiesList.map(ent => `
+                <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 6px; margin-bottom: 8px;">
+                    <div>
+                      <span class="font-bold" style="font-size: 13px; color: var(--text-primary);">${ent.entityName}</span>
+                      <span class="badge badge-medium" style="margin-left: 4px;">${ent.entityType}</span>
+                    </div>
+                    <span class="badge ${ent.fiuRegistered ? 'badge-low' : 'badge-external'}">${ent.fiuRegistered ? 'FIU-IND REG' : ent.confidence}</span>
+                  </div>
+
+                  <div class="font-mono text-xs text-muted" style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); padding: 5px 8px; border-radius: 3px; margin-bottom: 6px; word-break: break-all;">
+                    ${ent.wallet}
+                  </div>
+
+                  <div class="text-xs text-secondary" style="margin-bottom: 6px;">
+                    <strong>Attribution Rationale:</strong> ${ent.whyExplanation}
+                  </div>
+
+                  ${ent.leaContactProcedure ? `
+                    <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-strong); border-radius: 3px; padding: 6px 8px; font-size: 11px; color: var(--accent-primary);">
+                      <strong>Law Enforcement Protocol:</strong> ${ent.leaContactProcedure}
+                    </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 11. FRAUD PATTERN LIBRARY (Feature 10)
+    async function renderFraudLibraryView(root) {
+      const res = await fetch('/api/fraud-patterns');
+      const patterns = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">FRAUD PATTERN & TYPOLOGY LIBRARY</div>
+              <div class="panel-subtitle">Reference indicators and heuristic comparison models for 8 cybercrime typologies</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              ${patterns.map(p => `
+                <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 14px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 6px; margin-bottom: 8px;">
+                    <div>
+                      <span class="badge badge-medium">${p.category}</span>
+                      <strong style="margin-left: 6px; font-size: 13px; color: var(--text-primary);">${p.name}</strong>
+                    </div>
+                    <div>
+                      <span class="badge badge-critical">${p.severity}</span>
+                      <span class="font-mono text-xs text-muted" style="margin-left: 6px;">Typical: ${p.typicalHops}</span>
+                    </div>
+                  </div>
+
+                  <p class="text-xs text-secondary" style="margin-bottom: 8px;">${p.description}</p>
+
+                  <div class="form-label" style="margin-bottom: 4px;">Typology Indicators</div>
+                  <ul style="padding-left: 16px; font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">
+                    ${(p.indicators || []).map(ind => `<li>${ind}</li>`).join('')}
+                  </ul>
+
+                  <div style="background: var(--bg-surface); padding: 6px 10px; border-radius: 3px; border: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: 10px; color: var(--accent-primary);">
+                    Rule: ${p.detectionRule}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 12. WALLET INTELLIGENCE
+    function renderWalletView(root) {
+      if (!activeInvestigation || !activeInvestigation.walletProfile) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded.</div></div>`;
+        return;
+      }
+      const p = activeInvestigation.walletProfile;
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">WALLET INTELLIGENCE PROFILE</div>
+              <div class="panel-subtitle">On-chain behavioral telemetry and attribution state</div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <span class="badge badge-critical">${p.riskClassification} RISK</span>
+              <span class="badge ${p.provenance === 'LIVE DATA' ? 'badge-live' : 'badge-demo'}">${p.provenance}</span>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <!-- Target Address Banner -->
+            <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px; margin-bottom: 14px;">
+              <div class="form-label">Subject Suspect Wallet Address</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 13px; font-weight: 700;">
+                <span style="color: var(--text-primary); word-break: break-all;">${p.address}</span>
+                <div style="display: flex; gap: 6px;">
+                  <button class="btn btn-secondary btn-sm font-mono" onclick="navigator.clipboard.writeText('${p.address}'); alert('Address copied to clipboard!');">COPY</button>
+                  <button class="btn btn-secondary btn-sm font-mono" onclick="promptAddNote('WALLET', '${p.address}')">+ NOTE</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Financials Matrix -->
+            <div class="grid-4" style="margin-bottom: 14px;">
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Observable Balance</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: var(--text-primary);">${p.currentBalance} ${p.asset}</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Total Inflow</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: #4ade80;">+${p.incomingVolume} ${p.asset}</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Total Outflow</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: #f87171;">-${p.outgoingVolume} ${p.asset}</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Total Transactions</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: var(--text-primary);">${p.txCount} txs</div>
+              </div>
+            </div>
+
+            <!-- Observation Details & Labels -->
+            <div class="grid-2">
+              <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                <div class="form-label">Attributed Registry Labels</div>
+                <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 6px;">
+                  ${(p.knownLabels || []).map(l => `<div class="font-mono text-xs" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 5px 8px; border-radius: 3px;">${l}</div>`).join('')}
+                </div>
+              </div>
+
+              <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px; font-family: var(--font-mono); font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+                <div class="form-label">Observation Timeline</div>
+                <div>First Seen: <strong>${new Date(p.firstActivity).toUTCString()}</strong></div>
+                <div>Latest Active: <strong>${new Date(p.latestActivity).toUTCString()}</strong></div>
+                <div>Attribution State: <span class="badge badge-external">${p.attributionConfidence}</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 13. TRANSACTIONS LEDGER
+    function renderTransactionsView(root) {
+      if (!activeInvestigation) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded.</div></div>`;
+        return;
+      }
+      const txs = activeInvestigation.transactions || [];
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">TRANSACTIONS FORENSIC LEDGER</div>
+              <div class="panel-subtitle">Multi-hop ledger entries (${txs.length} total operations)</div>
+            </div>
+            <button class="btn btn-secondary btn-sm font-mono" onclick="exportTransactionsCSV()">EXPORT CSV</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Transaction Hash</th>
+                  <th>Direction</th>
+                  <th>Amount</th>
+                  <th>Hop Level</th>
+                  <th>Classification</th>
+                  <th>Provenance</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${txs.map(t => `
+                  <tr onclick="openTransactionDrawer('${t.hash}')">
+                    <td class="font-mono text-xs">${new Date(t.timestamp).toLocaleTimeString()}</td>
+                    <td class="font-mono font-semibold text-xs" style="color: var(--accent-primary);">${t.hash.slice(0,10)}...${t.hash.slice(-8)}</td>
+                    <td><span class="badge ${t.direction === 'INCOMING' ? 'badge-low' : 'badge-critical'}">${t.direction}</span></td>
+                    <td class="font-mono text-xs font-bold">${t.amount} ${t.asset} <span class="text-muted" style="font-weight: 400;">($${t.usdValue.toLocaleString()})</span></td>
+                    <td class="font-mono text-xs"><span class="badge badge-medium">Hop ${t.hop}</span></td>
+                    <td class="font-semibold text-xs">${t.classification}</td>
+                    <td><span class="badge badge-demo">${t.provenance}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // 14. FORENSIC TIMELINE (Feature 11)
+    function renderTimelineView(root) {
+      if (!activeInvestigation) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded.</div></div>`;
+        return;
+      }
+      const events = activeInvestigation.timelineEvents || [];
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">CHRONOLOGICAL FORENSIC TIMELINE</div>
+              <div class="panel-subtitle">Timestamped sequence of fund dispersal and VASP milestones (${events.length} Events)</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div style="display: flex; flex-direction: column; gap: 10px; border-left: 2px solid var(--border-strong); padding-left: 16px; margin-left: 8px;">
+              ${events.map(ev => `
+                <div style="position: relative; background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px; cursor: pointer;" onclick="openTransactionDrawer('${ev.txHash}')">
+                  <div style="position: absolute; left: -22px; top: 12px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-primary); border: 2px solid var(--bg-app);"></div>
+                  
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <div>
+                      <strong style="color: var(--text-primary); font-size: 12px;">${ev.title}</strong>
+                      <span class="badge badge-medium" style="margin-left: 6px;">${ev.type}</span>
+                    </div>
+                    <span class="font-mono text-xs text-muted">${new Date(ev.timestamp).toUTCString()}</span>
+                  </div>
+
+                  <div class="text-xs text-secondary">${ev.description}</div>
+                  <div class="font-mono text-xs text-muted" style="margin-top: 4px;">Tx: <span style="color: var(--accent-primary);">${ev.txHash}</span></div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 15. EVIDENCE LOCKER (Feature 12)
+    function renderEvidenceView(root) {
+      if (!activeInvestigation) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded.</div></div>`;
+        return;
+      }
+      const evs = activeInvestigation.evidence || [];
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">EVIDENCE LOCKER & CHAIN OF CUSTODY</div>
+              <div class="panel-subtitle">
+                Cryptographically sealed artifacts, block headers, and verified attribution registries (${evs.length} items)
+              </div>
+            </div>
+            <button class="btn btn-secondary btn-sm font-mono" onclick="exportEvidenceJSON()">EXPORT EVIDENCE JSON</button>
+          </div>
+
+          <div class="panel-body">
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${evs.map(ev => `
+                <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                      <span class="badge badge-medium">${ev.type}</span>
+                      <strong class="text-xs" style="color: var(--text-primary);">${ev.title}</strong>
+                    </div>
+                    <span class="badge badge-demo">${ev.provenance}</span>
+                  </div>
+                  <div class="font-mono text-xs" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); padding: 6px 8px; border-radius: 3px; word-break: break-all; margin-bottom: 4px; color: var(--accent-primary);">
+                    ${ev.identifier}
+                  </div>
+                  <div class="text-xs text-secondary">${ev.description}</div>
+                  <div class="text-xs font-mono text-muted" style="margin-top: 4px; border-top: 1px solid var(--border-subtle); padding-top: 4px;">
+                    Chain of Custody: ${ev.chainOfCustody} &bull; Sealed: ${new Date(ev.timestamp).toUTCString()}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 16. STANDARDIZED REPORTS (Feature 18)
+    async function renderReportsView(root) {
+      if (!activeInvestigation) {
+        root.innerHTML = `<div class="panel"><div class="panel-body text-muted text-xs font-mono">No active investigation loaded.</div></div>`;
+        return;
+      }
+
+      const res = await fetch(`/api/reports/${activeInvestigation.id}`);
+      const rep = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">STANDARDIZED INVESTIGATION REPORT</div>
+              <div class="panel-subtitle">Dossier Reference: ${rep.metadata.reportId}</div>
+            </div>
+            <button class="btn btn-primary btn-sm font-mono" onclick="window.print()">PRINT / SAVE AS PDF</button>
+          </div>
+
+          <div class="panel-body">
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 4px; padding: 22px; max-width: 820px; margin: 0 auto; color: var(--text-primary);">
+              <div style="border-bottom: 2px solid var(--border-strong); padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between;">
+                <div>
+                  <div class="text-xs font-mono font-bold text-muted">${rep.metadata.organization}</div>
+                  <div style="font-size: 15px; font-weight: 800; letter-spacing: 0.3px;">FORENSIC BLOCKCHAIN INVESTIGATION DOSSIER</div>
+                  <div class="text-xs text-muted font-mono">Suite: ${rep.metadata.softwareSuite}</div>
+                </div>
+                <div class="font-mono text-xs" style="text-align: right;">
+                  <div>Ref: <strong>${rep.metadata.reportId}</strong></div>
+                  <div style="color: #f87171; font-weight: 700;">${rep.metadata.classificationLevel}</div>
+                </div>
+              </div>
+
+              <!-- Overview Grid -->
+              <table class="data-table" style="margin-bottom: 14px;">
+                <tbody>
+                  <tr><td style="font-weight: 700; width: 180px;">Case Identifier</td><td class="font-mono">${rep.caseOverview.caseId}</td></tr>
+                  <tr><td style="font-weight: 700;">NCRP Reference</td><td class="font-mono">${rep.caseOverview.complaintReference}</td></tr>
+                  <tr><td style="font-weight: 700;">Incident Type</td><td>${rep.caseOverview.incidentType}</td></tr>
+                  <tr><td style="font-weight: 700;">Reported Wallet</td><td class="font-mono">${rep.caseOverview.reportedWallet} (${rep.caseOverview.network})</td></tr>
+                  <tr><td style="font-weight: 700;">Investigator</td><td>${rep.caseOverview.assignedInvestigator}</td></tr>
+                </tbody>
+              </table>
+
+              <!-- Executive Summary -->
+              <div style="margin-bottom: 14px;">
+                <div class="font-bold font-mono text-xs" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 3px; margin-bottom: 5px;">1. EXECUTIVE ANALYTICAL SUMMARY</div>
+                <p class="text-xs" style="line-height: 1.6;">${rep.executiveSummary}</p>
+              </div>
+
+              <!-- VASP Deposit Nodes -->
+              <div style="margin-bottom: 14px;">
+                <div class="font-bold font-mono text-xs" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 3px; margin-bottom: 5px;">2. IDENTIFIED VASP & EXCHANGE DEPOSIT NODES</div>
+                <table class="data-table">
+                  <thead>
+                    <tr><th>Entity Name</th><th>Type</th><th>Deposit Address</th><th>Attribution</th><th>FIU Status</th></tr>
+                  </thead>
+                  <tbody>
+                    ${(rep.fundFlowAnalysis?.identifiedExchanges || []).map(e => `
+                      <tr>
+                        <td><strong>${e.name}</strong></td>
+                        <td>${e.type}</td>
+                        <td class="font-mono text-xs">${e.wallet}</td>
+                        <td class="font-mono text-xs">${e.confidence}</td>
+                        <td class="font-mono text-xs">${e.fiuRegistered ? 'REGISTERED' : 'OVERSEAS'}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Recommendations -->
+              <div style="margin-bottom: 14px;">
+                <div class="font-bold font-mono text-xs" style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 3px; margin-bottom: 5px;">3. ACTIONABLE LEA RECOMMENDATIONS</div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                  ${(rep.investigativeRecommendations || []).map(r => `
+                    <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); padding: 8px; border-radius: 4px; font-size: 11px;">
+                      <div class="font-bold" style="color: var(--text-primary); margin-bottom: 2px;">${r.title}</div>
+                      <div class="text-secondary" style="margin-bottom: 3px;">${r.reason}</div>
+                      <div style="background: var(--bg-surface); padding: 5px; border-radius: 3px; border: 1px solid var(--border-subtle); color: var(--accent-primary);"><strong>Action:</strong> ${r.suggestedAction}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid var(--border-subtle); padding-top: 8px; text-align: center; font-size: 9px; font-family: var(--font-mono); color: var(--text-muted);">
+                Digital Integrity Hash: ${rep.metadata.verificationHash}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 17. INVESTIGATION ANALYTICS (Feature 16)
+    async function renderAnalyticsView(root) {
+      const res = await fetch('/api/analytics');
+      const ana = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">INVESTIGATION ANALYTICS & EXECUTIVE METRICS</div>
+              <div class="panel-subtitle">Comprehensive crime breakdown and VASP attribution performance</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="grid-4" style="margin-bottom: 14px;">
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                <div class="form-label">Total Cases Managed</div>
+                <div class="font-mono font-bold" style="font-size: 20px; color: var(--accent-primary);">${ana.totalCases}</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                <div class="form-label">Critical Risk Priority</div>
+                <div class="font-mono font-bold" style="font-size: 20px; color: #f87171;">${ana.criticalCases}</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                <div class="form-label">Monitored Wallets</div>
+                <div class="font-mono font-bold" style="font-size: 20px; color: #4ade80;">${ana.activeMonitors}</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                <div class="form-label">VASP Attribution Rate</div>
+                <div class="font-mono font-bold" style="font-size: 20px; color: #fbbf24;">${ana.vaspAttributionSuccessRate}</div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 14px;">
+                <div class="form-label" style="margin-bottom: 8px;">Top Identified Exchange Gateways</div>
+                <table class="data-table">
+                  <thead><tr><th>VASP Name</th><th>Volume USD</th><th>Traces</th></tr></thead>
+                  <tbody>
+                    ${(ana.topIdentifiedVASPs || []).map(v => `
+                      <tr>
+                        <td><strong>${v.name}</strong></td>
+                        <td class="font-mono">$${v.volumeUsd.toLocaleString()}</td>
+                        <td class="font-mono">${v.count}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 14px;">
+                <div class="form-label" style="margin-bottom: 8px;">Incident Category Breakdown</div>
+                <table class="data-table">
+                  <thead><tr><th>Typology</th><th>Cases</th><th>Share</th></tr></thead>
+                  <tbody>
+                    ${(ana.incidentBreakdown || []).map(b => `
+                      <tr>
+                        <td><strong>${b.type}</strong></td>
+                        <td class="font-mono">${b.count}</td>
+                        <td class="font-mono">${b.share}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 18. DATA SOURCES & NODES
+    async function renderDataSourcesView(root) {
+      const res = await fetch('/api/system/data-sources');
+      const sources = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">BLOCKCHAIN DATA SOURCES & NODE CONNECTIVITY</div>
+              <div class="panel-subtitle">Full Archive Node health, Mempool listeners, and Sanctions registry synchronizers</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="grid-2">
+              ${sources.map(s => `
+                <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <strong class="text-xs">${s.name}</strong>
+                    <span class="badge badge-low">${s.status}</span>
+                  </div>
+                  <div class="font-mono text-xs text-secondary" style="display: flex; flex-direction: column; gap: 2px;">
+                    <div>Type: <strong>${s.type}</strong> &bull; Network: <strong>${s.network}</strong></div>
+                    <div>Endpoint: ${s.endpoint}</div>
+                    <div>Latency: <strong style="color: #4ade80;">${s.latency_ms} ms</strong></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 19. SYSTEM HEALTH
+    async function renderSystemView(root) {
+      const res = await fetch('/api/system/health');
+      const sys = await res.json();
+
+      root.innerHTML = `
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">SYSTEM HEALTH & ARCHITECTURAL METRICS</div>
+              <div class="panel-subtitle">VASPTrace forensics engine throughput, memory RSS, and gateway status</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="grid-4" style="margin-bottom: 14px;">
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Engine Status</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: #4ade80;">ONLINE</div>
+                <div class="text-muted text-xs font-mono">Uptime: ${sys.uptimeSeconds}s</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Memory RSS</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: var(--text-primary);">${sys.systemMetrics.memoryRssMb} MB</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Active Workers</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: var(--text-primary);">${sys.systemMetrics.activeWorkers} Parallel</div>
+              </div>
+              <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+                <div class="form-label">Database Mode</div>
+                <div class="font-mono font-bold" style="font-size: 15px; color: var(--text-primary);">SQLite WAL</div>
+              </div>
+            </div>
+
+            <div class="form-label" style="margin-bottom: 6px;">Law Enforcement Gateway Status</div>
+            <div class="grid-2">
+              ${Object.entries(sys.integrations).map(([k, v]) => `
+                <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 8px; font-family: var(--font-mono); font-size: 11px;">
+                  <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 3px;">
+                    <span>${k.toUpperCase()}</span>
+                    <span class="badge ${v.status === 'IMPLEMENTED' ? 'badge-low' : 'badge-external'}">${v.status}</span>
+                  </div>
+                  <div class="text-secondary">Protocol: ${v.protocol}</div>
+                  ${v.endpoint ? `<div class="text-muted">Endpoint: ${v.endpoint}</div>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 20. SETTINGS & LEA CONFIG
+    function renderSettingsView(root) {
+      root.innerHTML = `
+        <div class="panel" style="max-width: 650px;">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">SETTINGS & LEA INTEGRATION CONFIGURATION</div>
+              <div class="panel-subtitle">Officer credentials, national cyber portals linkage, and algorithmic risk weights</div>
+            </div>
+          </div>
+
+          <div class="panel-body">
+            <div class="form-group">
+              <label class="form-label">Designated Officer Name & Rank</label>
+              <input type="text" class="form-input" value="Inspector Rajesh Sharma (CyTrain Unit)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">I4C Unit / Division Code</label>
+              <input type="text" class="form-input font-mono" value="I4C-CYTRAIN-DELHI-04">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">SAHYOG Gateway REST Endpoint</label>
+              <input type="text" class="form-input font-mono" value="https://sahyog.i4c.mha.gov.in/api/v2">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">NCRP Ingestion Webhook</label>
+              <input type="text" class="form-input font-mono" value="https://cybercrime.gov.in/webhook/ncrp-events">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+              <button class="btn btn-primary font-mono" onclick="alert('Configurations saved successfully to local secure keystore!');">SAVE CONFIGURATIONS</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Drawers & Modals
+    function openNodeDrawer(nodeId) {
+      const node = (activeInvestigation?.graphNodes || []).find(n => n.id.toLowerCase() === nodeId.toLowerCase()) || { id: nodeId, type: 'UNKNOWN', risk: 'HIGH', label: nodeId };
+      const entity = (activeInvestigation?.entities || entitiesList || []).find(e => e.wallet.toLowerCase() === nodeId.toLowerCase());
+
+      document.getElementById('drawer-title').innerText = `NODE INTELLIGENCE DOSSIER`;
+      document.getElementById('drawer-content').innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 12px;">
+          <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span class="font-bold" style="font-size: 13px;">${node.entityName || node.type}</span>
+              <span class="badge badge-critical">${node.risk} RISK</span>
+            </div>
+            <div class="font-mono text-xs text-muted" style="word-break: break-all;">${node.id}</div>
+          </div>
+
+          ${entity ? `
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 4px; padding: 12px; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+              <div class="font-bold font-mono" style="color: var(--accent-primary);">VASP / REGISTERED ENTITY PROFILE</div>
+              <div>Entity Name: <strong>${entity.entityName}</strong></div>
+              <div>Jurisdiction: <strong>${entity.jurisdiction || 'N/A'}</strong></div>
+              <div>FIU-IND Registered: <strong style="color: ${entity.fiuRegistered ? '#4ade80' : 'var(--text-secondary)'};">${entity.fiuRegistered ? 'YES (Reporting Entity)' : 'NO / Offshore'}</strong></div>
+              <div>Attribution Basis: <span style="color: var(--text-secondary);">${entity.whyExplanation}</span></div>
+              ${entity.leaContactProcedure ? `<div style="background: var(--bg-surface-subtle); padding: 8px; border-radius: 4px; border: 1px solid var(--border-subtle); margin-top: 4px;"><strong>LEA Protocol:</strong> ${entity.leaContactProcedure}</div>` : ''}
+            </div>
+          ` : ''}
+
+          <div>
+            <button class="btn btn-secondary btn-sm font-mono w-full" style="width: 100%; margin-bottom: 6px;" onclick="promptAddNote('WALLET', '${node.id}')">+ Add Note to this Address</button>
+            <button class="btn btn-secondary btn-sm font-mono w-full" style="width: 100%;" onclick="promptAddMonitorWithAddress('${node.id}')">Add to Real-Time Monitoring</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('drawer-footer').innerHTML = `
+        <button class="btn btn-secondary" onclick="closeDrawer()">Close</button>
+      `;
+      document.getElementById('drawer-container').style.display = 'flex';
+    }
+
+    function openTransactionDrawer(txHash) {
+      const tx = (activeInvestigation?.transactions || []).find(t => t.hash === txHash) || { hash: txHash, classification: 'Transfer Operation', from: '0x...', to: '0x...', amount: 0, asset: 'ETH', usdValue: 0, blockNumber: 20845100, timestamp: new Date().toISOString() };
+
+      document.getElementById('drawer-title').innerText = `TRANSACTION DOSSIER`;
+      document.getElementById('drawer-content').innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 12px;">
+          <div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px;">
+            <div class="form-label">Classification</div>
+            <div class="font-bold" style="color: var(--text-primary); font-size: 13px;">${tx.classification}</div>
+          </div>
+
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px; font-family: var(--font-mono); font-size: 11px;">
+            <div class="form-label">Transaction Hash (TxID)</div>
+            <div style="word-break: break-all; font-weight: 700; color: var(--accent-primary);">${tx.hash}</div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px; font-family: var(--font-mono); font-size: 11px; background: var(--bg-surface-subtle); padding: 10px; border-radius: 4px; border: 1px solid var(--border-subtle);">
+            <div>FROM: <strong style="word-break: break-all;">${tx.from}</strong></div>
+            <div style="text-align: center; color: var(--text-muted);">| (Transfer Direction)</div>
+            <div>TO: <strong style="word-break: break-all;">${tx.to}</strong></div>
+          </div>
+
+          <div class="grid-2 font-mono">
+            <div style="background: var(--bg-surface-subtle); padding: 10px; border-radius: 4px; border: 1px solid var(--border-subtle);">
+              <div class="form-label">Transfer Amount</div>
+              <div class="font-bold" style="font-size: 14px;">${tx.amount} ${tx.asset}</div>
+              <div class="text-muted text-xs">≈ $${(tx.usdValue || 0).toLocaleString()} USD</div>
+            </div>
+            <div style="background: var(--bg-surface-subtle); padding: 10px; border-radius: 4px; border: 1px solid var(--border-subtle);">
+              <div class="form-label">Block Height</div>
+              <div class="font-bold" style="font-size: 14px;">#${tx.blockNumber}</div>
+            </div>
+          </div>
+
+          <div>
+            <button class="btn btn-secondary btn-sm font-mono" style="width: 100%;" onclick="promptAddNote('TRANSACTION', '${tx.hash}')">+ Add Investigator Note to Tx</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('drawer-footer').innerHTML = `
+        ${tx.explorerUrl ? `<a href="${tx.explorerUrl}" target="_blank" class="btn btn-primary btn-sm">View on Explorer ↗</a>` : ''}
+        <button class="btn btn-secondary" onclick="closeDrawer()">Close</button>
+      `;
+      document.getElementById('drawer-container').style.display = 'flex';
+    }
+
+    async function promptAddNote(targetType, targetId) {
+      const content = prompt(`Add Forensic Note for ${targetType}:`);
+      if (!content) return;
+      await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetType, targetId, author: 'Insp. Rajesh Sharma', role: 'Lead Investigator', content })
+      });
+      alert('Note recorded and linked to forensic chain of custody!');
+      if (targetType === 'CASE') openCaseDrawer(targetId);
+    }
+
+    async function promptAddMonitorWithAddress(addr) {
+      await fetch('/api/monitored-wallets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ wallet: addr, network: 'ETH', amountThreshold: 1.0, riskThreshold: 'HIGH', durationDays: 30 })
+      });
+      alert(`Address ${addr.slice(0, 10)}... added to active real-time surveillance.`);
+    }
+
+    function exportTransactionsCSV() {
+      if (!activeInvestigation || !activeInvestigation.transactions) return;
+      const rows = [['Timestamp', 'TxHash', 'Direction', 'From', 'To', 'Amount', 'Asset', 'USD_Value', 'Hop', 'Classification']];
+      activeInvestigation.transactions.forEach(t => {
+        rows.push([t.timestamp, t.hash, t.direction, t.from, t.to, t.amount, t.asset, t.usdValue, t.hop, `"${t.classification}"`]);
+      });
+      const csv = "data:text/csv;charset=utf-8," + rows.map(r => r.join(',')).join('\n');
+      const a = document.createElement('a');
+      a.href = encodeURI(csv);
+      a.download = `Transactions_${activeInvestigation.caseId}.csv`;
+      a.click();
+    }
+
+    function exportEvidenceJSON() {
+      if (!activeInvestigation || !activeInvestigation.evidence) return;
+      const json = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activeInvestigation.evidence, null, 2));
+      const a = document.createElement('a');
+      a.href = json;
+      a.download = `Evidence_${activeInvestigation.caseId}.json`;
+      a.click();
+    }
+
+    function openSearchModal() {
+      document.getElementById('search-modal').style.display = 'flex';
+      document.getElementById('global-search-input').focus();
+    }
+    function closeSearchModal() {
+      document.getElementById('search-modal').style.display = 'none';
+    }
+    function closeDrawer() {
+      document.getElementById('drawer-container').style.display = 'none';
+    }
+
+    async function handleGlobalSearch(q) {
+      const container = document.getElementById('search-results-body');
+      if (!q || q.length < 2) {
+        container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px; font-family: var(--font-mono); font-size: 11px;">Type at least 2 characters...</div>`;
+        return;
+      }
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+
+      let html = '';
+      if (data.cases.length > 0) {
+        html += `<div class="form-label">Matching Cases</div>`;
+        data.cases.forEach(c => {
+          html += `<div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); padding: 6px 10px; border-radius: 4px; margin-bottom: 4px; cursor: pointer;" onclick="openCaseDrawer('${c.case_id}'); closeSearchModal();"><span class="font-mono font-bold" style="color: var(--accent-primary);">${c.case_id}</span> &bull; ${c.title}</div>`;
+        });
+      }
+      if (data.entities.length > 0) {
+        html += `<div class="form-label" style="margin-top: 8px;">Matching Entities / VASPs</div>`;
+        data.entities.forEach(e => {
+          html += `<div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); padding: 6px 10px; border-radius: 4px; margin-bottom: 4px; cursor: pointer;" onclick="navigateTo('entities'); closeSearchModal();"><strong>${e.entity_name}</strong> (${e.label})</div>`;
+        });
+      }
+      if (data.clusters && data.clusters.length > 0) {
+        html += `<div class="form-label" style="margin-top: 8px;">Matching Wallet Clusters</div>`;
+        data.clusters.forEach(cl => {
+          html += `<div style="background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle); padding: 6px 10px; border-radius: 4px; margin-bottom: 4px; cursor: pointer;" onclick="navigateTo('clusters'); closeSearchModal();"><span class="font-mono" style="color: var(--accent-primary);">${cl.cluster_id}</span>: ${cl.possible_entity} (${cl.wallet_count} wallets)</div>`;
+        });
+      }
+      if (!html) html = `<div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 11px;">No matching records found.</div>`;
+      container.innerHTML = html;
+    }
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearchModal();
+      }
+      if (e.key === 'Escape') {
+        closeSearchModal();
+        closeDrawer();
+      }
+    });
+
+    // Launch Application
+    initApp();
+  </script>
+</body>
+</html>

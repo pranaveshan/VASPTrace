@@ -1,0 +1,25 @@
+{
+  "name": "vasptrace",
+  "version": "1.0.0",
+  "description": "VASPTrace — Real-Time Blockchain Forensics & Exchange Identification Platform (SIH26183)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "echo 'Build complete'"
+  },
+  "engines": {
+    "node": ">=20.x"
+  },
+  "keywords": [
+    "blockchain-forensics",
+    "vasp-attribution",
+    "cybercrime",
+    "mha",
+    "i4c",
+    "sih26183"
+  ],
+  "author": "pranaveshan",
+  "license": "MIT"
+}

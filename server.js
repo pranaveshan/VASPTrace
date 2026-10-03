@@ -4,12 +4,21 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 const PORT = process.env.PORT || 5000;
-const DB_PATH = path.resolve(process.cwd(), 'forensics.sqlite');
+const isVercel = Boolean(process.env.VERCEL);
+const DB_PATH = isVercel ? ':memory:' : path.resolve(process.cwd(), 'forensics.sqlite');
 
-// Initialize SQLite with WAL mode
-const db = new DatabaseSync(DB_PATH);
-db.exec('PRAGMA journal_mode = WAL;');
-db.exec('PRAGMA foreign_keys = ON;');
+// Initialize SQLite with WAL or memory mode
+let db;
+try {
+  db = new DatabaseSync(DB_PATH);
+  if (!isVercel) {
+    db.exec('PRAGMA journal_mode = WAL;');
+  }
+  db.exec('PRAGMA foreign_keys = ON;');
+} catch (e) {
+  console.warn('Fallback to in-memory SQLite:', e.message);
+  db = new DatabaseSync(':memory:');
+}
 
 // Initialize Relational Schema
 db.exec(`
@@ -1908,8 +1917,8 @@ function sendJSON(res, data, status = 200) {
   res.end(JSON.stringify(data));
 }
 
-// Create Main HTTP Server
-const server = http.createServer(async (req, res) => {
+// Main Request Handler
+export async function handleRequest(req, res) {
   const urlObj = new URL(req.url, `http://${req.headers.host || 'localhost:5000'}`);
   const pathname = urlObj.pathname;
   const searchParams = urlObj.searchParams;
@@ -2417,7 +2426,9 @@ const server = http.createServer(async (req, res) => {
     console.error('Server error', err);
     sendJSON(res, { error: err.message || 'Internal error' }, 500);
   }
-});
+}
+
+export default handleRequest;
 
 function getWorkstationHTML() {
   const filePath = path.resolve(process.cwd(), 'public', 'index.html');
@@ -2427,10 +2438,20 @@ function getWorkstationHTML() {
   return `<!DOCTYPE html><html><body><h1>VASPTrace Forensics Engine Online</h1></body></html>`;
 }
 
-server.listen(PORT, () => {
-  console.log(`================================================================`);
-  console.log(`  VASPTrace BLOCKCHAIN FORENSICS WORKSTATION (SIH26183) ONLINE `);
-  console.log(`  Access URL: http://localhost:${PORT}                          `);
-  console.log(`  Relational SQLite DB Initialized with WAL Mode                `);
-  console.log(`================================================================`);
-});
+// Create and start HTTP Server when run standalone
+export const server = http.createServer(handleRequest);
+
+const isMainModule = process.argv[1] && (
+  process.argv[1].endsWith('server.js') || 
+  process.argv[1].endsWith('server')
+);
+
+if (!process.env.VERCEL && isMainModule) {
+  server.listen(PORT, () => {
+    console.log(`================================================================`);
+    console.log(`  VASPTrace BLOCKCHAIN FORENSICS WORKSTATION (SIH26183) ONLINE `);
+    console.log(`  Access URL: http://localhost:${PORT}                          `);
+    console.log(`  Relational SQLite DB Initialized with WAL Mode                `);
+    console.log(`================================================================`);
+  });
+}
